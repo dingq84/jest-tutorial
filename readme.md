@@ -13,6 +13,7 @@
   * 環境部署
   * Jest Cli簡介
   * descirbe、it(test)、expect
+  * setup、teardown
   * 常用matcher
   * mock  
 2. **React-test-library**
@@ -54,7 +55,35 @@ Jest是一套由Facebook開發且維護的單元測試工具，是由Jasmine發�
   當你預計寫一個測試，但尚未想到細節時，可透過 *test.todo('textname')* ，當你下次執行測試指令時，可以看到一個todo字眼，就知道之前預計完成的測試案例尚未測試(下圖紫色字眼)
 
       <img src="./images/Jest/test-todo.png" alt="'test': 'jest'" width="250" /> 
-### 5.常用matcher
-### 6.mock
+
+### 5.setup、teardown
+  * beforeAll  
+  執行時間為在每個describe開始之前
+  * AfterAll  
+  執行時間為在每個describe執行完畢後
+  * beforeEach  
+  執行時間為在每個test開始之前，這邊有scope問題，如果在describe裡面，則只適用在此describe裡面的每個test，但如果放在global位置，則適用所有test
+  * AfterEach  
+  執行時間為在每個test執行完畢後，這邊有scope問題，如果在describe裡面，則只適用在此describe裡面的每個test，但如果放在global位置，則適用所有test  
+  官方有提供一個範例，讓大家熟悉執行的時間點，程式碼如下
+        
+  <pre>
+    beforeAll(() => console.log('1 - beforeAll'));  
+    afterAll(() => console.log('1 - afterAll'));
+    beforeEach(() => console.log('1 - beforeEach'));
+    afterEach(() => console.log('1 - afterEach'));
+    test('', () => console.log('1 - test'));
+    describe('Scoped / Nested block', () => {
+      beforeAll(() => console.log('2 - beforeAll'));
+      afterAll(() => console.log('2 - afterAll'));
+      beforeEach(() => console.log('2 - beforeEach'));
+      afterEach(() => console.log('2 - afterEach'));
+      test('', () => console.log('2 - test'));
+    });
+  </pre>
+
+
+### 6.常用matcher
+### 7.mock
 
 ---
