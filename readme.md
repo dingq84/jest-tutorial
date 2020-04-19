@@ -84,7 +84,7 @@ Jest是一套由Facebook開發且維護的單元測試工具，是由Jasmine發�
 
 
 ### 6.常用matcher  
-  Jest提供很多Matcher去幫助我們下斷言，以下僅列舉一些筆者較常見的
+  Jest提供很多Matcher去幫助我們下斷言，以下僅列舉一些較常見的
   * *toBe*  
   常常用在對基本型態的值做檢查，如: expect(3).toBe(3)
   * *toEqual*  
@@ -99,7 +99,7 @@ Jest是一套由Facebook開發且維護的單元測試工具，是由Jasmine發�
   檢查長度可使用這語法
 
 ### 7.mock  
-當我們測試一個function的時候，並不在意其他functions運作是否正確，僅想要將其他function的結果固定住，模擬出我們要測試的這個function實際會執行的場景，此時就可以透過mock語法，製造出我們想要的回傳結果。有兩種方式進行模擬（ mock function、mock module）
+我們進行測試的時候，除了測試目標（System under Test, SUT)之外，SUT所依賴的物件或是函數（Depended-on component, DOC）的不確定性是我們要盡力避免的，不然很難歸咎測試失敗的原因，這時候我們就會製造假物件（Test Double) 透過mock語法，製造出我們想要的回傳結果。有兩種方式進行模擬（ mock function、mock module）
 
 * *mock function*  
 透過jest.fn()產生一個mock function，自帶mock物件屬性，儲存每次執行的相關資訊。  
@@ -114,7 +114,7 @@ Jest是一套由Facebook開發且維護的單元測試工具，是由Jasmine發�
   * invocationCallOrder(Array)  
     記錄每次mock function的執行順序  
   * results(Array)  
-  記錄每次呼叫mock function的回傳值
+  記錄每次呼叫mock function的回傳值，每次回傳的結果為一個物件{ type, value}，type有三種可能（return, throw, incomplete)，前兩者為順利執行完function，最後一個則是尚未執行完畢; value則是執行結果，當type===incomplete，value為undefined
 
   除了將函數丟入jest.fn()模擬之外，也能直接呼叫空的jest.fn()，並透過mock的其他function定義這個模擬函數執行結果，以下介紹幾個較為常見的：  
   * mockClear  
@@ -145,4 +145,6 @@ Jest是一套由Facebook開發且維護的單元測試工具，是由Jasmine發�
   jest.spyOn(object, methodName).mockImplementation(() =>   customImplementation) or 
   object[methodName] = jest.fn(() => customImplementation);
 </pre>
-* *mock module*
+* *mock module*  
+測試某些function時，不希望function真的去執行某些module，像是最常見的axios，在測試的時候，不會真的去執行call api，這時候就需要模擬整個axios。在我們想要模擬的檔案附近建立一個__mocks__（名稱須完全一樣）資料夾，並在底下建立一個和想要模擬的檔案名稱一模一樣的檔案。
+> 如果要模擬的module是存放在node_modules，則在根目錄的地方建立__mocks__
