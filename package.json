@@ -8,5 +8,8 @@
   },
   "dependencies": {
     "jest": "^25.3.0"
+  },
+  "jest": {
+    "verbose": true
   }
 }
