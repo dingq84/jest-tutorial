@@ -147,13 +147,16 @@ Jest提供mock api去實作Test Double，一共有三種語法(jest.fn, jest.moc
     mockImpletation加上Promise.reject的語法，使用的時候記得會變成非同步函數
 * jest.spyOn（object, methedName)  
 有時候SUT會依賴DOC的回傳結果進行處理，但如果都固定回傳值的話，未來假設DOC的回傳結果型態變更，SUT的Testing會無法檢查出錯誤，因此希望DOC執行原本的邏輯，就會使用jest.spyOn去進行模擬，
-  >jest.spyOn其實只是語法糖，等於將原本的方法丟入jest.fn，如下： 
-  <pre>
-    jest.spyOn(object, methodName);
-    jest.fn(() => object.methodName);
-  </pre>
+  >如果使用jest.spyOn(object, method).mockImplementation(), 其實可以直接使用jest.fn()實現： 
+      <pre>
+          jest.spyOn(object, methodName).mockImplementation(() => customImplementation) or
+          object[method] = jest.fn(() => customImplementation);
+      </pre>
 * jest.mock(moduleName, factory, options)
-測試某些function時，不希望function真的去執行某些module，像是最常見的axios，在測試的時候，不會真的去執行call api，這時候就需要模擬整個axios。在我們想要模擬的檔案附近建立一個__mocks__（名稱須完全一樣）資料夾，並在底下建立一個和想要模擬的檔案名稱一模一樣的檔案。
-  >如果要模擬的module是存放在node_modules，則在根目錄的地方建立__mocks__  
+有時候DOC是module，我們一樣可以透過jest.mock模擬，有兩種方式可以進行模擬，模擬的手法差不多，主要差別在於模擬的程式碼是否有獨立出一個檔案，方便其他測試檔案共用
+  * 在測試檔案內定義mock module的行為  
+
+  * 在要模擬的檔案旁邊建立一個__mocks__資料夾，在建立一個一樣檔名的檔案
+  >如果要模擬的module是存放在node_modules，則在根目錄的地方建立__mocks__，且無需在jest.mock('moduleName'), jest 預設自動mock
 
   jest.mock讓我們對想進行模擬的模組進行模擬，第二個參數必須回傳一個function，設計我們預期模擬模組的相關方法
