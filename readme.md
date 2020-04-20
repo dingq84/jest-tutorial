@@ -82,7 +82,6 @@ Jest是一套由Facebook開發且維護的單元測試工具，是由Jasmine發�
     });
   </pre>
 
-
 ### 6.常用matcher  
   Jest提供很多Matcher去幫助我們下斷言，以下僅列舉一些較常見的
   * *toBe*  
@@ -99,23 +98,29 @@ Jest是一套由Facebook開發且維護的單元測試工具，是由Jasmine發�
   檢查長度可使用這語法
 
 ### 7.mock  
-我們進行測試的時候，除了測試目標（System under Test, SUT)之外，SUT所依賴的物件或是函數（Depended-on component, DOC）的不確定性是我們要盡力避免的，不然很難歸咎測試失敗的原因，這時候我們就會製造假物件（Test Double) 透過mock語法，製造出我們想要的回傳結果。有兩種方式進行模擬（ mock function、mock module）
+我們進行測試的時候，除了測試目標（System Under Test, SUT)之外，SUT執行時所依賴的稱為相依元件（Depended-on Component, DOC），由於測試SUT時，但可能因為DOC的邏輯造成測試變得更加複雜，因此為了解決只專注在SUT的邏輯上和避免浪費無謂的時間在執行DOC上，測試替身(Test Double)是我們的好幫手，測試替身可分成下列五種
+  * Dummy： 不包含實作物件，僅作為傳入參數且不會被使用，如：測試登入的邏輯時，登入成功會去執行logger紀錄登入資訊，但logger的執行細節並不是我們在意的，此時就會透過建立一個Dummy，擁有logger的方法，但方法內容為空
+  * Stub： 回傳度定值的實作
+  * Fake： 接近原始物件但比較簡單的實作
+  * Spy： 類似Stub，但會紀錄SUT與他互動的紀錄
+  * Mock： 可實現類似Dummy、Stub和Spy的功能  
 
-* *mock function*  
-透過jest.fn()產生一個mock function，自帶mock物件屬性，儲存每次執行的相關資訊。  
-  * calls(Array)  
+Jest提供mock api去實作Test Double，一共有三種語法(jest.fn, jest.mock和jest.spyOn)，將依序介紹
+* jesy.fn(implementation)  
+最簡單建立一個Mock物件的方式，每個Mock物件自帶mock屬性，儲存每次執行的相關資訊
+  * mock.calls(Array)  
   記錄每次呼叫mock function的傳入參數
-  * instances(Array)  
+  * mock.instances(Array)  
   紀錄透過new語法執行mock function的變數， 如下面的程式碼， mockFn.mock.instances會等於[instanceA]    
   <code>
     const mockFn = jest.fn();
     const instanceA = new mockFn();
   </code>
-  * invocationCallOrder(Array)  
-    記錄每次mock function的執行順序  
-  * results(Array)  
+  * mock.invocationCallOrder(Array)  
+    記錄每次mock function的執行次數  
+  * mock.results(Array)  
   記錄每次呼叫mock function的回傳值，每次回傳的結果為一個物件{ type, value}，type有三種可能（return, throw, incomplete)，前兩者為順利執行完function，最後一個則是尚未執行完畢; value則是執行結果，當type===incomplete，value為undefined
-
+  
   除了將函數丟入jest.fn()模擬之外，也能直接呼叫空的jest.fn()，並透過mock的其他function定義這個模擬函數執行結果，以下介紹幾個較為常見的：  
   * mockClear  
     將整個mock property清除掉，包括額外賦予mock的property
@@ -140,11 +145,15 @@ Jest是一套由Facebook開發且維護的單元測試工具，是由Jasmine發�
     mockImpletation加上Promise.resolve的語法，使用的時候記得會變成非同步函數
   * mockRejectedValue(mockRejectedValueOnce)  
     mockImpletation加上Promise.reject的語法，使用的時候記得會變成非同步函數
->jest.spyOn和jest.fn十分相似，差別在jest.spyOn是針對物件的某個屬性方法進行模擬，如官方提供的例子： 
-<pre>
-  jest.spyOn(object, methodName).mockImplementation(() =>   customImplementation) or 
-  object[methodName] = jest.fn(() => customImplementation);
-</pre>
-* *mock module*  
+* jest.spyOn（object, methedName)  
+有時候SUT會依賴DOC的回傳結果進行處理，但如果都固定回傳值的話，未來假設DOC的回傳結果型態變更，SUT的Testing會無法檢查出錯誤，因此希望DOC執行原本的邏輯，就會使用jest.spyOn去進行模擬，
+  >jest.spyOn其實只是語法糖，等於將原本的方法丟入jest.fn，如下： 
+  <pre>
+    jest.spyOn(object, methodName);
+    jest.fn(() => object.methodName);
+  </pre>
+* jest.mock(moduleName, factory, options)
 測試某些function時，不希望function真的去執行某些module，像是最常見的axios，在測試的時候，不會真的去執行call api，這時候就需要模擬整個axios。在我們想要模擬的檔案附近建立一個__mocks__（名稱須完全一樣）資料夾，並在底下建立一個和想要模擬的檔案名稱一模一樣的檔案。
-> 如果要模擬的module是存放在node_modules，則在根目錄的地方建立__mocks__
+  >如果要模擬的module是存放在node_modules，則在根目錄的地方建立__mocks__  
+
+  jest.mock讓我們對想進行模擬的模組進行模擬，第二個參數必須回傳一個function，設計我們預期模擬模組的相關方法
