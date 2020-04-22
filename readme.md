@@ -130,10 +130,10 @@ Jest提供mock api去實作Test Double，一共有三種語法(jest.fn, jest.moc
     功能除了mockClear之外，也會將mockImpletation清除掉
   * mockImplementation  
     接受一個函數作為mock的實作函數  
-  <ore>
+  <pre>
     const mockFn = jest.fn().mockImplementation(x => 42 + x);
-  </ore>
-    >縮寫為const mockFn = jest.fn(x => 42 + x)
+  </pre>
+    >縮寫為const mockFn = jest.fn(x => 42 + x)  
   * mockImplementationOnce  
     和mockImplementation一樣，差別在於只會執行一次，下一次將會是預設jest.fn的執行結果，後續指令也有提供once的指令，則不再額外介紹  
   * mockReturnValue(mockReturnValueOnce)  
@@ -144,7 +144,7 @@ Jest提供mock api去實作Test Double，一共有三種語法(jest.fn, jest.moc
     mockFn(); // 20
     </pre>
   * mockResolvedValue(mockResolvedValueOnce)  
-    mockImpletation加上Promise.resolve的語法，使用的時候記得會變成非同步函數
+    mockImpletation加上Promise.resolve的語法，使用的時候記得會變成非同步函數  
   * mockRejectedValue(mockRejectedValueOnce)  
     mockImpletation加上Promise.reject的語法，使用的時候記得會變成非同步函數
 * jest.spyOn    
