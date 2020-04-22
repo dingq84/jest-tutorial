@@ -8,20 +8,20 @@
 ---
 
 ## 大綱
-1. **Jest**
+1. ### Jest
   * ##### 介紹
-  * 環境部署
-  * Jest Cli簡介
-  * descirbe、it(test)、expect
-  * setup、teardown
-  * 常用matcher
-  * mock  
-2. **React-testing-library**
-  * 介紹
-  * 常用API
-  * 實戰
+  * ##### 環境部署
+  * ##### Jest Cli簡介
+  * ##### descirbe、it(test)、expect
+  * ##### setup、teardown
+  * ##### 常用matcher
+  * ##### mock  
+2. ### React-testing-library
+  * ##### 介紹
+  * ##### 常用API
+  * ##### 實戰
 
-3. **vue-unit-test**
+3. ### vue-unit-test
 
 ---
 
