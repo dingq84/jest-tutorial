@@ -5,19 +5,25 @@ import User from '../User';
 jest.mock('../User');
 
 describe('manual mock user', () => {
-  it('user should be mocked', () => {
-    const user = new User('test');
-    const name = user.getName();
+  // Arrange
+  const user = new User('ding');
+  // Act
+  const name = user.getName();
+  // Assert
+  it('user name equals ding', () => {
+    expect(user.name).toBe('ding');
+  });
+
+  it('getName() container test wording', () => {
     expect(name).toContain('test');
-    expect(user.name).toBe('test');
   });
 });
 
 describe('manual mock axios', () => {
-it('axios get', () => {
-    const responseData = { name: 'test' };
-    axios.get.mockImplementationOnce(() => (responseData));
+  const responseData = { name: 'test' };
+  axios.get.mockImplementationOnce(() => (responseData));
+  it('axios get will return response data', () => {
     const result = axios.get();
     expect(result).toMatchObject(responseData);
-  })
+  });
 });

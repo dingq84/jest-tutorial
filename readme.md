@@ -16,12 +16,12 @@
   * setup、teardown
   * 常用matcher
   * mock  
-2. **React-test-library**
+2. **React-testing-library**
+  * 介紹
+  * 常用API
+  * 實戰
+
 3. **vue-unit-test**
-4. **實戰**
-  * Normal function
-  * Asynchronous function
-  * Api  
 
 ---
 
@@ -100,14 +100,16 @@ Jest是一套由Facebook開發且維護的單元測試工具，是由Jasmine發�
 ### 7.mock  
 我們進行測試的時候，除了測試目標（System Under Test, SUT)之外，SUT執行時所依賴的稱為相依元件（Depended-on Component, DOC），由於測試SUT時，但可能因為DOC的邏輯造成測試變得更加複雜，因此為了解決只專注在SUT的邏輯上和避免浪費無謂的時間在執行DOC上，測試替身(Test Double)是我們的好幫手，測試替身可分成下列五種
   * Dummy： 不包含實作物件，僅作為傳入參數且不會被使用，如：測試登入的邏輯時，登入成功會去執行logger紀錄登入資訊，但logger的執行細節並不是我們在意的，此時就會透過建立一個Dummy，擁有logger的方法，但方法內容為空
-  * Stub： 回傳度定值的實作
+  * Stub： 回傳固定值的實作
   * Fake： 接近原始物件但比較簡單的實作
   * Spy： 類似Stub，但會紀錄SUT與他互動的紀錄
   * Mock： 可實現類似Dummy、Stub和Spy的功能  
 
-Jest提供mock api去實作Test Double，一共有三種語法(jest.fn, jest.mock和jest.spyOn)，將依序介紹
-* jesy.fn(implementation)  
-最簡單建立一個Mock物件的方式，每個Mock物件自帶mock屬性，儲存每次執行的相關資訊
+Jest提供mock api去實作Test Double，一共有三種語法(jest.fn, jest.mock和jest.spyOn)
+
+
+  * jesy.fn   
+  最簡單建立一個Mock物件的方式，每個Mock物件自帶mock屬性，儲存每次執行的相關資訊
   * mock.calls(Array)  
   記錄每次呼叫mock function的傳入參數
   * mock.instances(Array)  
@@ -145,18 +147,69 @@ Jest提供mock api去實作Test Double，一共有三種語法(jest.fn, jest.moc
     mockImpletation加上Promise.resolve的語法，使用的時候記得會變成非同步函數
   * mockRejectedValue(mockRejectedValueOnce)  
     mockImpletation加上Promise.reject的語法，使用的時候記得會變成非同步函數
-* jest.spyOn（object, methedName)  
+* jest.spyOn    
 有時候SUT會依賴DOC的回傳結果進行處理，但如果都固定回傳值的話，未來假設DOC的回傳結果型態變更，SUT的Testing會無法檢查出錯誤，因此希望DOC執行原本的邏輯，就會使用jest.spyOn去進行模擬，
   >如果使用jest.spyOn(object, method).mockImplementation(), 其實可以直接使用jest.fn()實現： 
       <pre>
           jest.spyOn(object, methodName).mockImplementation(() => customImplementation) or
           object[method] = jest.fn(() => customImplementation);
       </pre>
-* jest.mock(moduleName, factory, options)
+* jest.mock
 有時候DOC是module，我們一樣可以透過jest.mock模擬，有兩種方式可以進行模擬，模擬的手法差不多，主要差別在於模擬的程式碼是否有獨立出一個檔案，方便其他測試檔案共用
   * 在測試檔案內定義mock module的行為  
 
   * 在要模擬的檔案旁邊建立一個__mocks__資料夾，在建立一個一樣檔名的檔案
-  >如果要模擬的module是存放在node_modules，則在根目錄的地方建立__mocks__，且無需在jest.mock('moduleName'), jest 預設自動mock
+  >如果要模擬的module是存放在node_modules，則在根目錄的地方建立__mocks__，且無需再jest.mock('moduleName'), jest 預設自動mock
 
-  jest.mock讓我們對想進行模擬的模組進行模擬，第二個參數必須回傳一個function，設計我們預期模擬模組的相關方法
+
+
+>有提供範例程式演示上述介紹mock的說明，有興趣的可至examples/jest-mock查看
+---
+
+## 二、React testing library
+### 1. 介紹  
+React有許多測試套件，但之所以介紹react-testing-library的原因很簡單，像是因為官方推薦、CRA內建套件，加上[Kent C. Dodds](https://kentcdodds.com/blog/)不時會分享testing的文章，幫助我們釐清測試的想法觀念， 其他更詳細的說明可參考[官網](https://testing-library.com/docs/react-testing-library/intro)說明
+
+### 2. 常用API
+  * render  
+  會渲染整個component成dom，背後是使用ReactDOM.render去實作
+  * queries  
+  react-testing-library可使用dom-testing-library的相關方法，官方提供了很多找搜尋節點的方式，這邊比較推薦使用getByTestId，因為使用其他方式搜尋結點（by class, by label text等等）可能會造成測試需要隨著class或是text的修改而更新，但如果使用data-testid，即可減低這種情況發生，因為只針對測試所寫的屬性
+  * fireEvent  
+  可觸發DOM的事件，提供我們模擬click、change發生時後的dom的更新
+
+### 3.實戰  
+這邊有一個Header component，裡面根據isAuth來渲染登入或登出的按鈕，點擊登入的按鈕時，isAuth會改為true，反之點擊登出按鈕,isAuth會變為false，詳細的程式碼如下圖  
+    
+  <img src="./images/React/Header.png" alt="'test':   'Header'"  width="600" /> 
+
+在開始測試之後，要先釐清這個component扮演的角色，以及我們預期這個component要實作哪些內容，並整理出我們測試的方向：
+  * isAuth在true或false的時候，Header有沒有如預期的執行
+  * 點擊按鈕後，登入和登出的按鈕是否會交換
+  * userService.login和userService.logout不應該在這邊測試  
+
+所以我們的測試案例程式碼分成登入和登出兩種情境
+  * 登入  
+  1.渲染未登入的Header component成dom  
+  2.確認並取得登入的按鈕   
+  3.點擊登入按鈕  
+  4.檢查是否執行登入方法  
+  5.登入按鈕不存在文本內，反之登出按鈕應存在    
+    <img src="./images/React/login-test.png" alt="'test':   'Header'"  width="500" /> 
+  * 登出  
+  1.渲染已登入的Header component成dom  
+  2.取得登出的按鈕  
+  3.點擊登出按鈕  
+  4.檢查是否執行登出方法  
+  5.檢查登入按鈕存在文本內，反之登出按鈕被移除  
+    <img src="./images/React/logout-test.png" alt="'test':   'Header'"  width="500" /> 
+
+從上面的敘述可以發現，我們測試元件的時候，並不在意內部狀態的變更(isAuth)，我們著重在畫面的渲染是否如我們預期，因為UI Component專職在畫面的顯示，內部的資料並不是他的工作之一，但不是說內部資料變化不重要，只是那是屬於其他檔案負責的，相關的測試也應該在那邊進行，更詳細的測試內容可以參考範例(examples/react-simply-login)
+
+---
+## 三、
+
+## 參考出處
+
+* [Jest](https://jestjs.io/en/)
+* [React testing library](https://github.com/testing-library/react-testing-library)
