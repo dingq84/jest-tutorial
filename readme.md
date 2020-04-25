@@ -108,16 +108,16 @@ Jest是一套由Facebook開發且維護的單元測試工具，是由Jasmine發�
 Jest提供mock api去實作Test Double，一共有三種語法(jest.fn, jest.mock和jest.spyOn)
 
 
-  * jesy.fn   
+  * jest.fn   
   最簡單建立一個Mock物件的方式，每個Mock物件自帶mock屬性，儲存每次執行的相關資訊
   * mock.calls(Array)  
   記錄每次呼叫mock function的傳入參數
   * mock.instances(Array)  
   紀錄透過new語法執行mock function的變數， 如下面的程式碼， mockFn.mock.instances會等於[instanceA]    
-  <code>
-    const mockFn = jest.fn();
-    const instanceA = new mockFn();
-  </code>
+    <pre>
+     const mockFn = jest.fn();
+     const instanceA = new mockFn();
+    </pre> 
   * mock.invocationCallOrder(Array)  
     記錄每次mock function的執行次數  
   * mock.results(Array)  
